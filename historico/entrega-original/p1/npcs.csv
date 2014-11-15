@@ -1,0 +1,8 @@
+0,0;jugador;Finn;100;100;10;0;-
+1,2;amigo;Jake;100;100;100;100;¡Hey Tío! recuerda llevar algún arma para salir vivo de esta misión. Mira en la habitación
+2,3;amigo;Marceline;100;100;100;100; ¿Sabías que al final de la pradera hay un camino que lleva hacia un castillo? Bueno, voy a seguir aquí con mis solos de guitarra
+2,3;amigo;BMO;1;1;1;1;Tíos dejad de haceros daño. Volved a ser como antaño... ¡Todo irá mejor! ¡Uuuuh!
+2,7;amigo;Gordon-Freeman;100;100;100;100;¡...!
+2,7;enemigoactivo;Lamarr;10;10;5;0;¡Hiiiii! Tk Tk Tk…
+7,6;enemigopasivo;Gunter;50;40;30;100;¡Cuak!
+9,8;enemigopasivo;Rey-Hielo;100;40;50;80;¡Bienvenido al castillo! ¿Quieres salir? Divirtámonos un rato, ¡diversión es mi segundo nombre! ¡Gunter! ¡atac...! ¿¡Gunter!?

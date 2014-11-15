@@ -1,0 +1,14 @@
+# En el caso de la mochila, el primer num es capacidad (num objetos) y el segundo peso max.
+0,0;jugador;mochila;mochila;tu mochila de aventuras;mochila;5;40
+0,4;.;mapa;mapa;mapa de la zona;-;0;0.1
+1,1;.;arma;espada;una espada molona;fuerza;30;5
+1,1;.;defensa;pijama;tu pijama favorito con gatitos muy monos;defensa;10;1
+2,3;.;pocima;pocima-energia;una pócima para recuperar energías;energia;30;0.4
+8,6;.;pocima;torito-rojo;una lata con un toro alado. En la etiqueta dice “Torito Rojo”;energia;40;0.33
+0,1;.;arma;sarten;una sartén con bacon frito;fuerza;10;2
+4,5;.;objeto;carro;un carro de madera;-;0;300
+2,7;.;defensa;traje-HEV;traje de protección completo para entornos peligrosos (HEV). Este traje fue construido por una doctora en física teórica para las pruebas de radiación nuclear y está compuesto por una aleación metálica de bronce, oro y titanio;defensa;50;10
+2,7;.;pocima;pocion-misteriosa;una poción sin ninguna etiqueta que identifique su contenido;salud;30;0.5
+6,6;.;pocima;pocion-rara;una poción sin ninguna etiqueta que identifique su contenido;salud;-50;0.5
+7,6;Gunter;arma;taladradora;taladradora de grandes dimensiones;fuerza;30;8
+3,4;.;objeto;arbol;un arbol centenario;-;0;1200

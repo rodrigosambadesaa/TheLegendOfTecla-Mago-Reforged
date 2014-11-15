@@ -1,0 +1,26 @@
+0,0;camino;el patio principal
+0,1;edificacion;la cocina de la casa
+0,3;bosque;el bosque profundo cerca de la casa
+0,4;bosque;una zona del bosque lejana
+1,1;edificacion;la habitación de la casa
+1,2;edificacion;la entrada principal de la casa
+1,3;bosque;la entrada del bosque
+1,4;bosque;una zona del bosque alejada
+2,3;prado;una salida hacia la pradera al exterior del bosque
+3,3;prado;una zona del prado sin nada interesante
+3,4;prado;una zona de prado pantanosa con un gran árbol centenario en el centro
+4,3;prado;una zona de prado con una caseta de un antiguo pozo
+4,4;prado;la salida del prado. Hay una puerta de madera con un cartel que pone “Bienvenido a Pradosverdes”
+4,5;camino;una camino pedregoso con un carro tirado a un lado
+4,6;camino;un cruce de caminos. ¿Cual escogerás?
+4,7;camino;una zona del camino muy oscura, parece el inicio de una cueva
+3,7;camino;una camino oscuro lleno de piedras en el suelo
+2,7;camino;el final del camino. En la pared norte se ve una puerta tras unos escombros que pone “Camino a Ciudad 17”
+5,6;camino;un camino hacia el sur
+6,6;camino;un camino hacia más al sur
+7,6;camino;un camino con una caseta vieja. La caseta tiene una escotilla oxidada y polvorienta. Parece que hay alguien merodeando
+8,6;camino;la parte final del camino. Parece que no hay forma de continuar hacia el sur, el camino sigue hacia el este. En el suelo hay una etiqueta que pone “torito rojo”
+8,7;camino;un camino misterioso que se torna angosto
+8,8;camino;la parte final del camino. Puedes ver ya la entrada a un castillo
+9,8;edificacion;el castillo del enemigo final
+9,9;edificacion;camino a la gloria 

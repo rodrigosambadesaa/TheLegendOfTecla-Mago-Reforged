@@ -1,13 +1,8 @@
-# The Legend of Tecla - entrega P1 original
+# The Legend of Tecla - entrega P2 histórica
 
-Esta carpeta conserva como código fuente la primera versión realizada en 2014
-por Rodrigo Sambade y Miguel Alonso Castro. La entrega obtuvo una calificación
-de 6/10 y presentaba una base funcional, pero débil: formato irregular, código
-comentado y responsabilidades muy acopladas a la consola.
+Código fuente recuperado de la segunda fase del proyecto de 2014-2015,
+coautoría de Rodrigo Sambade y Miguel Alonso Castro.
 
-Para publicarla como histórico se extrajo el proyecto NetBeans original y se
-aplicó formato uniforme, limpieza de plantillas y pequeñas correcciones locales
-de legibilidad y límites del mapa. No se ha intentado convertirla en la versión
-moderna ni ocultar sus limitaciones de diseño.
-
-El punto de entrada es `p1/src/Mapa_e_partida/ClasePrincipalP1.java`.
+Se conserva la estructura NetBeans y los ficheros CSV utilizados por aquella
+entrega. El código Java se ha pasado por un formateador actual para que el
+histórico resulte legible, sin mezclarlo con la implementación vigente.

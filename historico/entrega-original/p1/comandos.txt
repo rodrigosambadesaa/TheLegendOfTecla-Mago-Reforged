@@ -1,0 +1,67 @@
+# Lista de comandos a ejecutar automáticamente.
+# No todos los comandos son válidos. Hay comandos que pueden
+# intentar mover al jugador en una dirección no válida o coger
+# más de un arma aunque no se pueda. Esto no debería provocar
+# ningún error irrecuperable en el programa, simplemente debería
+# ir saliendo por pantalla el resultado de ejecutar o intentar ejecutar
+# dicho comando como si desde el terminal fuera.
+#
+# Este fichero NO PUEDE MODIFICARSE. Si los comandos de la implementación
+# del juego son distintos, el programa debe traducir estos comandos a los
+# comandos usados al cargar el archivo. En caso de que algún comando
+# no esté soportado por el juego porque se ha decido no implementar, imprimir
+# por pantalla "[nombre-de-comando] comando no soportado" o similar.
+mover oeste
+mover este
+coger sarten
+mover sur
+mirar
+coger espada
+tirar sarten
+coger espada
+mirar
+coger pijama
+mover este
+mover este
+mover sur
+hablar BMO
+coger pocima-energia
+inventario
+mover sur
+mover sur
+mover este
+mirar
+mover este
+coger carro
+mover este
+mover este
+mover norte
+mover norte
+mirar
+coger pocion-misteriosa
+usar pocion-misteriosa
+inventario
+mover norte
+mover sur
+mover sur
+mover oeste
+mover sur
+mover sur
+mirar pocion-rara
+coger pocion-rara
+mover sur
+mirar
+atacar Gunter
+atacar Gunter
+mover sur
+mover este
+coger torito-rojo
+usar pocion-rara
+usar pocima-energia
+mover este
+mover sur
+atacar Rey-Hielo
+mover este
+
+
+
