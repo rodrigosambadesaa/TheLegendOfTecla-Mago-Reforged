@@ -6,7 +6,7 @@
 package documentacion;
 
 /**
- * @author Higinio
+ * @author miguel.alonso
  */
 public final class Axuda {
   public static String Mostrar() {

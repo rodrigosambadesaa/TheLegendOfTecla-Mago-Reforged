@@ -4,7 +4,7 @@
  */
 package Mapa_e_partida;
 
-import Personaje.Npcs;
+import Personaje.NPC;
 import Personaje.Objeto;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class Celda {
   private boolean transitable;
   private int numero;
   private String descAmplia;
-  private ArrayList<Npcs> npcs;
+  private ArrayList<NPC> npcs;
 
   public Celda() {
     objetos = new ArrayList<>();
@@ -100,15 +100,15 @@ public class Celda {
     this.posicionMapa = copia;
   }
 
-  public ArrayList<Npcs> getNpcs() {
+  public ArrayList<NPC> getNpcs() {
     return npcs;
   }
 
-  public void setNpcs(ArrayList<Npcs> npcs) {
+  public void setNpcs(ArrayList<NPC> npcs) {
     this.npcs = npcs;
   }
 
-  public void setNpcs(Npcs npcs) {
+  public void setNpcs(NPC npcs) {
     this.npcs.add(npcs);
   }
 
@@ -117,16 +117,40 @@ public class Celda {
     else return true;
   }
 
-  //    @Override
-  //    public String toString() {
-  //        String retorno = "";
-  //        retorno = this.posicionMapa;
-  //        retorno += ", " + this.descripcion;
-  //        if(this.objetos != null) retorno += ", " + this.objetos.toString();
-  //        retorno += ", " + this.transitable;
-  //        retorno += ", " + this.descAmplia;
-  //        return retorno;
-  //    }
+  public void ponerObjetos(Objeto objeto) {
+    this.objetos.add(objeto);
+  }
+
+  public void ponerObjetos(ArrayList<Objeto> objetos) {
+    for (int i = 0; i < objetos.size(); i++) {
+      this.objetos.add(objetos.get(i));
+    }
+  }
+
+  /**
+   * comprobamos si existe un personaje NPC en la celda con el nombre pasado como parámetro
+   *
+   * @param nombre del personaje
+   * @return
+   */
+  public NPC personajeNombre(String nombre) {
+    NPC npc = null;
+    for (NPC npcCelda : this.getNpcs()) {
+      if (npcCelda.getNombre().equalsIgnoreCase(nombre)) {
+        npc = npcCelda;
+      }
+    }
+    return npc;
+  }
+
+  public NPC getNPC() {
+    NPC npc = null;
+    for (NPC npcCelda : this.getNpcs()) {
+      npc = npcCelda;
+    }
+    return npc;
+  }
+
   @Override
   public String toString() {
     return "Celda{"
@@ -145,15 +169,5 @@ public class Celda {
         + ", npcs="
         + npcs
         + '}';
-  }
-
-  public void ponerObjetos(Objeto objeto) {
-    this.objetos.add(objeto);
-  }
-
-  public void ponerObjetos(ArrayList<Objeto> objetos) {
-    for (int i = 0; i < objetos.size(); i++) {
-      this.objetos.add(objetos.get(i));
-    }
   }
 }

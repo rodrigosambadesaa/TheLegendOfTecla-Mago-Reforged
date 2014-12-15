@@ -7,9 +7,7 @@ package Personaje;
 /**
  * @author miguel.alonso
  */
-import Mapa_e_partida.Celda;
-import Mapa_e_partida.Mapa;
-import java.awt.Point;
+import Utilidades.ConsolaNormal;
 import java.util.ArrayList;
 
 public class Mochila {
@@ -20,6 +18,7 @@ public class Mochila {
   private int bolsillos;
   private double pesoMax;
   private String descripcion;
+  protected ConsolaNormal consola = new ConsolaNormal();
 
   public Mochila(String nome, int capacidad) {
     this.nome = nome;
@@ -64,7 +63,7 @@ public class Mochila {
     if (nome.length() < 100) {
       this.nome = nome;
     } else {
-      System.out.println("El nombre es demasiado largo");
+      consola.imprimir("El nombre es demasiado largo");
     }
   }
 
@@ -76,7 +75,7 @@ public class Mochila {
     if (capacidad > 0 && capacidad < 100) {
       this.capacidad = capacidad;
     } else {
-      System.out.println("La capacidad debe tomar un valor entre 0 y 100");
+      consola.imprimir("La capacidad debe tomar un valor entre 0 y 100");
     }
   }
 
@@ -88,7 +87,7 @@ public class Mochila {
     if (bolsillos > 0 && bolsillos < 10) {
       this.bolsillos = bolsillos;
     } else {
-      System.out.println("La mochila debe tener entre 1 y 9 bolsillos");
+      consola.imprimir("La mochila debe tener entre 1 y 9 bolsillos");
     }
   }
 
@@ -154,69 +153,6 @@ public class Mochila {
             + "), "
             + (this.getPesoActual() / this.getPesoMax()) * 100
             + "%";
-    return retorno;
-  }
-
-  public String cogerObjeto(Point coordenadas, Mapa mapa, String nombreObjeto) {
-    String retorno = "sin objeto";
-    Celda celda = mapa.getCelda(coordenadas);
-    boolean bExiste = false;
-    if (celda.getObjetos() != null) {
-      for (Objeto objeto : celda.getObjetos()) {
-        // comprobamos que el objeto que quiere coger sea el pedido
-        if (nombreObjeto.equalsIgnoreCase(objeto.getNombre())) {
-          bExiste = true;
-          // si no excede el número de objetos en la mochila su capacidad continuamos
-          if (this.objetos.size() < this.getCapacidad()) {
-            if (objeto.getTipo_objeto().equalsIgnoreCase("arma") && this.tieneTipoObjeto("arma")) {
-              System.out.println("solo puedes tener un arma");
-            } else {
-              // ahora comprobamos que no se exceda el peso
-              if (this.getPesoMax() >= this.getPesoActual() + objeto.getPeso()) {
-                this.setObjetos(objeto);
-                // this.setPesoActual(this.getPesoActual() + objeto.getPeso());
-                retorno = "agregado";
-                // lo quitamos de la celda
-                celda.getObjetos().remove(objeto);
-                // salimos porque solo puede coger un objeto
-                break;
-              } else {
-                retorno = "con el objeto encontrado excedemos el peso máximo de la mochila";
-              }
-            }
-          } else {
-            retorno = "la mochila ya esta al limite de capacidad";
-          }
-        }
-      }
-      if (!bExiste) retorno = "no existe el objeto que quieres coger:" + nombreObjeto;
-    }
-    return retorno;
-  }
-
-  public String tirarObjeto(Point coordenadas, Mapa mapa, String nombreObjeto) {
-    String retorno = "no hay objetos en la mochila";
-    boolean bExiste = false;
-    if (this.getObjetos().size() > 0) {
-      Objeto objetoABorrar = null;
-      for (Objeto objeto : objetos) {
-        if (nombreObjeto.equalsIgnoreCase(objeto.getNombre())) {
-          bExiste = true;
-          // dejamos el objeto en la celda que estamos
-          mapa.getCelda(coordenadas).setObjetos(objeto);
-          objetoABorrar = objeto;
-          retorno = "tirado objeto: " + objeto.toString() + "\n";
-          // this.setPesoActual(this.getPesoActual() - objeto.getPeso());
-        }
-      }
-      if (!bExiste) retorno = "no existe el objeto que quieres tirar:" + nombreObjeto;
-
-      if (objetoABorrar != null) {
-        // borramos el objeto de la mochila
-        this.objetos.remove(objetoABorrar);
-      }
-    }
-
     return retorno;
   }
 

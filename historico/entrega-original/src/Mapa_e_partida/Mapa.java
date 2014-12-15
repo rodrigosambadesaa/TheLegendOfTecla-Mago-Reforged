@@ -7,29 +7,33 @@ package Mapa_e_partida;
 /**
  * @author Miguel Alonso Castro, Rodrigo Sambade Saa
  */
-import Personaje.Npcs;
+import static Utilidades.CONST.TAM_HORIZONTAL;
+import static Utilidades.CONST.TAM_VERTICAL;
+
+import Personaje.Jugador;
+import Personaje.NPC;
 import Personaje.Objeto;
 import Personaje.Personaje;
+import Utilidades.CONST;
+import Utilidades.ConsolaNormal;
 import Utilidades.Util;
 import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Mapa {
-
-  private static final String CARACTER_OBJETO = "0";
-  private static final String CARACTER_TRANSITABLE = "-";
-  private static final String CARACTER_NO_TRANSITABLE = "X";
-  private static final char CARACTER_POSICION_ACTUAL = '\u263A';
-  private static final String CARACTER_INTERROGANTE = "?";
-  public static final int TAM_HORIZONTAL = 10;
-  public static final int TAM_VERTICAL = 10;
+public class Mapa extends Objeto {
 
   private String nombre;
   private HashMap<Point, Celda> celdas = new HashMap<>();
-  private Personaje jugador = new Personaje();
+  private Personaje jugador;
   private String descripcion;
+  private Personaje jugadorAutomatico;
+  private int mapaTamHorizonal;
+  private int mapaTamVertical;
+  ArrayList<Personaje> personajes_secundarios;
+  ArrayList<Objeto> objetos;
+  ConsolaNormal consola = new ConsolaNormal();
 
   public Mapa() {
     // rellemaHashMap();
@@ -61,14 +65,15 @@ public class Mapa {
     return this.nombre;
   }
 
-  private void rellemaHashMap() {
+  public void rellemaHashMap() {
     int contTipo = 0;
     String valor = "";
     ArrayList objetos = null;
     String tipoPasillo = "";
-
-    for (int i = 0; i < 20; i++) {
-      for (int j = 0; j < 20; j++) {
+    this.setMapaTamHorizonal(CONST.TAM_HORIZONTAL);
+    this.setMapaTamVertical(CONST.TAM_VERTICAL);
+    for (int i = 0; i < CONST.TAM_HORIZONTAL; i++) {
+      for (int j = 0; j < CONST.TAM_VERTICAL; j++) {
         tipoPasillo = "pasillo normal";
         if ((i + j) % 5 == 0) {
           tipoPasillo = "pasillo estrecho";
@@ -115,56 +120,31 @@ public class Mapa {
             celda.setObjetos(objetos);
           }
         }
-        // System.out.println("celda:" +  i + "," + j + ": " + celda.toString());
+        // consola.imprimir("celda:" +  i + "," + j + ": " + celda.toString());
         Point p = new Point(i, j);
+        celda.setPosicionMapa(p);
         celdas.put(p, celda);
       }
     }
-    this.imprimirMapa();
+
+    // colocamos una mochila en la celda 0,0
+    Objeto objeto = new Objeto("mochila", 40, "mochila", 5);
+    Point pto = new Point(0, 0);
+    objeto.setPosicionMapa(pto);
+    objeto.setTipo_objeto("mochila");
+    objeto.setDescripcion("tu mochila");
+    objeto.setPoseedor("jugador");
+    objetos.add(objeto);
+    this.getCelda(pto).setObjetos(objeto);
+    if (!objetos.isEmpty()) {
+      this.objetos = objetos;
+    }
   }
 
   public void rellenaHashMap(String ruta) {
-    //        int contTipo = 0;
-    //        String valor = "";
-    //        ArrayList objetos = null;
-    //        String tipoPasillo = "";
-    //
-    //        for (int i = 0; i < 100; i++) {
-    //            for (int j = 0; j < 100; j++) {
-    //                tipoPasillo = "pasillo normal";
-    //                if((i+j)%5 == 0)tipoPasillo="pasillo estrecho";
-    //                Celda celda = new Celda(tipoPasillo,new ArrayList(),true);
-    //                if((i+j)%9 == 0 && i%2==0)celda.setTransitable(false);
-    //                //solo poñemos obxeto se a celda é transitable
-    //                if(celda.isTransitable()){
-    //                    //aleatorio, solo obxetos en algunha celdas
-    //                    if(j%10==0){
-    //                        int efecto = 0;
-    //                        double peso = Math.abs(j-i);
-    //                        String tipoObj="";
-    //                        while(peso>2){
-    //                            peso = peso/2;
-    //                        }
-    //                        if(contTipo==0) tipoObj="pocion de salud"; efecto = 10;
-    //                        if(contTipo==1) tipoObj="pocion de energía"; efecto = 5;
-    //                        if(contTipo==2) tipoObj="veneno"; efecto = -5;
-    //                        if(contTipo==3) tipoObj="mapa"; efecto = 0;
-    //
-    //                        Objeto objeto = new Objeto("obxeto_"+i+j, peso,tipoObj,efecto);
-    //                        contTipo++;
-    //                        //reiniciamos conTipo ao chegar a 3 para que volva a poñer os tipos de
-    // pocion dede o 0
-    //                        if(contTipo==3)contTipo=0;
-    //                        objetos = new ArrayList();
-    //                        objetos.add(objeto);
-    //                        celda.setObjetos(objetos);
-    //                    }
-    //                }
-    //                //System.out.println("celda:" +  i + "," + j + ": " + celda.toString());
-    //                celdas.put(i + "," + j, celda);
-    //            }
-    //        }
     try {
+      this.setMapaTamHorizonal(CONST.TAM_HORIZONTAL);
+      this.setMapaTamVertical(CONST.TAM_VERTICAL);
       // inicializamos celdas do mapa
       for (int i = 0; i < TAM_HORIZONTAL; i++) {
         for (int j = 0; j < TAM_VERTICAL; j++) {
@@ -175,13 +155,13 @@ public class Mapa {
           celdas.put(pto, celda);
         }
       }
-      // this.setCeldas(celdas);
+
       String fichDatosMapa = ruta + "mapa.csv";
       String fichNPCS = ruta + "npcs.csv";
       String fichObjetos = ruta + "objetos.csv";
       // si el fichero no existe mostramos mensaje y no leemos los ficheros
       if (!(new File(fichDatosMapa)).exists()) {
-        System.out.println("La ruta es errónea cargamos ficheros del directorio raíz");
+        consola.imprimir("La ruta es errónea cargamos ficheros del directorio raíz");
         fichDatosMapa = "mapa.csv";
         fichNPCS = "npcs.csv";
         fichObjetos = "objetos.csv";
@@ -190,21 +170,26 @@ public class Mapa {
       // rellenamos las celdas del mapa con la informacion proveniente del fichero mapa.csv
       ArrayList<Celda> celdas_fichero = Util.leerDatosMapa(fichDatosMapa);
       for (Celda celda : celdas_fichero) {
-        // celdas.put(celda.getPosicionMapa(), celda);
         celdas.put(celda.getPosicionMapa(), celda);
       }
 
       // Colocamos en la celda correspondiente a cada personaje
-      ArrayList<Npcs> personajes_secundarios = Util.leerDatosPersonajes(fichNPCS);
-      for (Npcs npcs : personajes_secundarios) {
+      personajes_secundarios = Util.leerDatosPersonajes(fichNPCS);
+      for (Personaje personaje : personajes_secundarios) {
         // buscamos la celda en la que hay que situar el Personaje Secundario
-        Celda celda = celdas.get(npcs.getPosicionMapa());
-        celda.setNpcs(npcs);
-        celdas.put(npcs.getPosicionMapa(), celda);
+        if (personaje instanceof NPC) {
+          NPC npcs = (NPC) personaje;
+          Celda celda = celdas.get(npcs.getPosicion());
+          celda.setNpcs(npcs);
+          celdas.put(npcs.getPosicion(), celda);
+        } else if (personaje instanceof Jugador) {
+          jugadorAutomatico = (Jugador) personaje;
+        }
       }
 
       // Colocamos cada objeto en su celda
       ArrayList<Objeto> objetos = Util.leerDatosObjetos(fichObjetos);
+      this.objetos = objetos;
       for (Objeto objeto : objetos) {
         // buscamos la celda en la que hay que situar el Objeto
         Celda celda = celdas.get(objeto.getPosicionMapa());
@@ -212,12 +197,12 @@ public class Mapa {
       }
 
     } catch (Exception e) {
-      System.out.println(e.toString());
+      consola.imprimir(e.toString());
     }
   }
 
   public String mirarCelda(Point coordenadas) {
-    String retorno = "No hay objetos en la celda";
+    String retorno = "No hay objetos en la celda=" + coordenadas.toString();
     Celda celda = this.getCelda(coordenadas);
     if (celda.getObjetos() != null && celda.getObjetos().size() > 0) {
       retorno = "";
@@ -229,6 +214,7 @@ public class Mapa {
   }
 
   public String mirarObjetoCelda(Point coordenadas, String obj) {
+
     String retorno = "No hay ese objeto en la celda";
     Celda celda = this.getCelda(coordenadas);
     if (celda.getObjetos() != null && celda.getObjetos().size() > 0) {
@@ -243,79 +229,37 @@ public class Mapa {
     return retorno;
   }
 
-  public void imprimirMapa() {
-    char transitable = '\u26F6';
-    char noTransitable = 'X';
-    char pasilloEstrecho = 'I';
-    char caritaSonriente = '\u263A';
-
-    Point actual = new Point();
-    actual.setLocation(this.jugador.getPosicionActual());
-
-    Point objetivo = new Point(18, 19);
-    Point p = new Point(this.jugador.getPosicionActual());
-
-    for (int i = 0; i < 20; i++) {
-      for (int j = 0; j < 20; j++) {
-        p.setLocation(i, j);
-
-        if (p.equals(actual)) {
-          System.out.print("\u263A ");
-
-        } else if (p.equals(objetivo)) {
-          System.out.print("+ ");
-        } else {
-          if (celdas.get(p).isTransitable()) {
-            if (celdas.get(p).getDescripcion().equals("pasillo estrecho")) {
-              System.out.print("\u2653 ");
-            } else {
-              System.out.print("\u26F6 ");
-            }
-
-          } else {
-            System.out.print("X ");
-          }
-        }
-      }
-      System.out.println("");
-    }
-  }
-
-  /**
-   * pinta El mapa en formato ascii
-   *
-   * @return
-   */
-  public String pintarMapa(Point punto) {
-    System.out.println("entrada");
-    int x = punto.x;
-    int y = punto.y;
+  @Override
+  public void usar(Personaje personaje) {
+    consola.imprimir("entrada");
+    int x = personaje.getPosicion().x;
+    int y = personaje.getPosicion().y;
     String retorno = "\"---------------Mapa do xogo------------------------\n";
     retorno +=
-        CARACTER_TRANSITABLE
+        CONST.CARACTER_TRANSITABLE
             + ": celda transitable, "
-            + CARACTER_NO_TRANSITABLE
+            + CONST.CARACTER_NO_TRANSITABLE
             + ": celda intransitable, "
-            + CARACTER_OBJETO
+            + CONST.CARACTER_OBJETO
             + ": celda transitable que conten obxeto\n";
     for (int i = 0; i < TAM_HORIZONTAL; i++) {
       for (int j = 0; j < TAM_VERTICAL; j++) {
         Celda celda = celdas.get(new Point(i, j));
         if (x == i && y == j) {
-          retorno += CARACTER_POSICION_ACTUAL;
+          retorno += CONST.CARACTER_POSICION_ACTUAL;
         } else if (celda.isTransitable()) {
           if (celda.getObjetos() != null && !celda.getObjetos().isEmpty()) {
-            retorno += CARACTER_OBJETO;
+            retorno += CONST.CARACTER_OBJETO;
           } else {
-            retorno += CARACTER_TRANSITABLE;
+            retorno += CONST.CARACTER_TRANSITABLE;
           }
         } else {
-          retorno += CARACTER_NO_TRANSITABLE;
+          retorno += CONST.CARACTER_NO_TRANSITABLE;
         }
       }
       retorno += "\n";
     }
-    return retorno;
+    consola.imprimir(retorno);
   }
 
   public String pintarMapaParcial(Celda celda) {
@@ -329,15 +273,15 @@ public class Mapa {
         if (i >= 0 && j >= 0) {
           Celda celda_adyacente = celdas.get(new Point(i, j));
           if (x == i && y == j) {
-            mapaParcial += CARACTER_POSICION_ACTUAL;
+            mapaParcial += CONST.CARACTER_POSICION_ACTUAL;
           } else if (celda_adyacente.isTransitable()) {
             if (celda_adyacente.getObjetos() != null && !celda_adyacente.getObjetos().isEmpty()) {
-              mapaParcial += CARACTER_OBJETO;
+              mapaParcial += CONST.CARACTER_OBJETO;
             } else {
-              mapaParcial += CARACTER_TRANSITABLE;
+              mapaParcial += CONST.CARACTER_TRANSITABLE;
             }
           } else {
-            mapaParcial += CARACTER_NO_TRANSITABLE;
+            mapaParcial += CONST.CARACTER_NO_TRANSITABLE;
           }
         }
       }
@@ -358,19 +302,19 @@ public class Mapa {
         // si es una celda descubierta pintamos el caracter que le corresponda
         if (puntosDescubiertos.contains(celda_act.getPosicionMapa())) {
           if (x == i && y == j) {
-            mapaParcial += CARACTER_POSICION_ACTUAL;
+            mapaParcial += CONST.CARACTER_POSICION_ACTUAL;
           } else if (celda_act.isTransitable()) {
             if (celda_act.getObjetos() != null && !celda_act.getObjetos().isEmpty()) {
-              mapaParcial += CARACTER_OBJETO;
+              mapaParcial += CONST.CARACTER_OBJETO;
             } else {
-              mapaParcial += CARACTER_TRANSITABLE;
+              mapaParcial += CONST.CARACTER_TRANSITABLE;
             }
           } else {
-            mapaParcial += CARACTER_NO_TRANSITABLE;
+            mapaParcial += CONST.CARACTER_NO_TRANSITABLE;
           }
         } else {
           // no es una celda descubierta -> pintamos un interrogante
-          mapaParcial += CARACTER_INTERROGANTE;
+          mapaParcial += CONST.CARACTER_INTERROGANTE;
         }
       }
       mapaParcial += "\n";
@@ -400,5 +344,45 @@ public class Mapa {
 
   public void setCeldas(HashMap<Point, Celda> celdas) {
     this.celdas = celdas;
+  }
+
+  public Personaje getJugadorAutomatico() {
+    return jugadorAutomatico;
+  }
+
+  public void setJugadorAutomatico(Personaje jugadorAutomatico) {
+    this.jugadorAutomatico = jugadorAutomatico;
+  }
+
+  public ArrayList<Personaje> getPersonajes_secundarios() {
+    return personajes_secundarios;
+  }
+
+  public void setPersonajes_secundarios(ArrayList<Personaje> personajes_secundarios) {
+    this.personajes_secundarios = personajes_secundarios;
+  }
+
+  public ArrayList<Objeto> getObjetos() {
+    return objetos;
+  }
+
+  public void setObjetos(ArrayList<Objeto> objetos) {
+    this.objetos = objetos;
+  }
+
+  public int getMapaTamHorizonal() {
+    return mapaTamHorizonal;
+  }
+
+  public void setMapaTamHorizonal(int mapaTamHorizonal) {
+    this.mapaTamHorizonal = mapaTamHorizonal;
+  }
+
+  public int getMapaTamVertical() {
+    return mapaTamVertical;
+  }
+
+  public void setMapaTamVertical(int mapaTamVertical) {
+    this.mapaTamVertical = mapaTamVertical;
   }
 }
