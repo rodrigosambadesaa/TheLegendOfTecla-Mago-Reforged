@@ -14,6 +14,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -106,7 +107,8 @@ public final class PanelConfiguracion extends JPanel {
         conAliados.setName("aliados.activados");
         modoAliados.setName("aliados.modo");
         condicionVictoria.setName("victoria.condicion");
-        setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
+        JPanel contenidoFormulario = new JPanel(new BorderLayout());
+        contenidoFormulario.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
         JLabel titulo = new JLabel("THE LEGEND OF TECLA", SwingConstants.CENTER);
         titulo.setFont(titulo.getFont().deriveFont(Font.BOLD, 28f));
@@ -115,10 +117,10 @@ public final class PanelConfiguracion extends JPanel {
         JPanel cabecera = new JPanel(new BorderLayout());
         cabecera.add(titulo, BorderLayout.CENTER);
         cabecera.add(subtitulo, BorderLayout.SOUTH);
-        add(cabecera, BorderLayout.NORTH);
+        contenidoFormulario.add(cabecera, BorderLayout.NORTH);
 
         JPanel formulario = new JPanel(new GridBagLayout());
-        formulario.setBorder(BorderFactory.createEmptyBorder(30, 100, 20, 100));
+        formulario.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
         int fila = 0;
         agregarFila(formulario, fila++, "Nombre del personaje", nombre);
         agregarFila(formulario, fila++, "Clase", clase);
@@ -160,7 +162,7 @@ public final class PanelConfiguracion extends JPanel {
         selectorDirectorio.add(directorio, BorderLayout.CENTER);
         selectorDirectorio.add(examinar, BorderLayout.EAST);
         agregarFila(formulario, fila, "Directorio del escenario", selectorDirectorio);
-        add(formulario, BorderLayout.CENTER);
+        contenidoFormulario.add(formulario, BorderLayout.CENTER);
 
         examinar.addActionListener(e -> seleccionarDirectorioConDialogo());
         conAliados.addActionListener(e -> actualizarAliados());
@@ -170,6 +172,7 @@ public final class PanelConfiguracion extends JPanel {
         actualizarAliados();
 
         JButton jugar = new JButton("Iniciar partida en GUI");
+        jugar.setName("configuracion.iniciar");
         jugar.setFont(jugar.getFont().deriveFont(Font.BOLD, 15f));
         jugar.addActionListener(e -> {
             try {
@@ -180,11 +183,21 @@ public final class PanelConfiguracion extends JPanel {
             }
         });
         JButton editor = new JButton("Editor grafico de mapas");
+        editor.setName("configuracion.editor");
         editor.addActionListener(e -> abrirEditor.run());
         JPanel botones = new JPanel();
         botones.add(jugar);
         botones.add(editor);
-        add(botones, BorderLayout.SOUTH);
+        contenidoFormulario.add(botones, BorderLayout.SOUTH);
+
+        JScrollPane desplazamiento = new JScrollPane(contenidoFormulario,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        desplazamiento.setName("configuracion.scroll");
+        desplazamiento.setBorder(null);
+        desplazamiento.getVerticalScrollBar().setUnitIncrement(20);
+        desplazamiento.getHorizontalScrollBar().setUnitIncrement(20);
+        add(desplazamiento, BorderLayout.CENTER);
     }
 
     /**
