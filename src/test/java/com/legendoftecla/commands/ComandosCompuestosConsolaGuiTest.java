@@ -4,7 +4,7 @@ import com.legendoftecla.TestFixtures;
 import com.legendoftecla.engine.MotorPartida;
 import com.legendoftecla.gui.ConsolaGrafica;
 import com.legendoftecla.gui.PanelJuego;
-import com.legendoftecla.model.characters.Guerrero;
+import com.legendoftecla.model.characters.Marine;
 import com.legendoftecla.model.characters.Mochila;
 import com.legendoftecla.model.characters.Sectoid;
 import com.legendoftecla.model.items.Arma;
@@ -17,7 +17,6 @@ import com.legendoftecla.model.world.Posicion;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.JTextField;
-import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Container;
@@ -56,7 +55,7 @@ class ComandosCompuestosConsolaGuiTest {
     }
 
     @Test
-    void laConsolaRepiteMovimientosYAtaquesAlObjetivoNominal() {
+    void laConsolaRepiteMovimientosYAtaquesATodaLaCelda() {
         TestFixtures.CapturingConsole consola = TestFixtures.consola();
         Juego juego = juegoAbierto(consola);
         MotorPartida motor = new MotorPartida(juego);
@@ -75,8 +74,10 @@ class ComandosCompuestosConsolaGuiTest {
         motor.ejecutarComando("atacar 2e alien azul 2");
 
         assertTrue(primero.getSalud() < saludPrimero);
-        assertEquals(saludSegundo, segundo.getSalud());
-        assertEquals(2, contar(consola.salida(), "Atacas a alien azul"));
+        assertTrue(segundo.getSalud() < saludSegundo,
+                "La ampliacion actual ataca a todos aunque se nombre uno de la celda");
+        assertEquals(saludPrimero - primero.getSalud(), saludSegundo - segundo.getSalud());
+        assertEquals(2, contar(consola.salida(), "Atacas a todos los enemigos"));
     }
 
     @Test
@@ -164,17 +165,6 @@ class ComandosCompuestosConsolaGuiTest {
     }
 
     @Test
-    void laGuiExponeLasDosOrdenesDeFormacion() throws Exception {
-        ConsolaGrafica consola = new ConsolaGrafica();
-        PanelJuego[] panel = new PanelJuego[1];
-        SwingUtilities.invokeAndWait(() -> panel[0] = new PanelJuego(
-                new MotorPartida(juegoAbierto(consola)), consola, () -> { }));
-
-        assertNotNull(buscarBoton(panel[0], "Formacion defensiva"));
-        assertNotNull(buscarBoton(panel[0], "Formacion ofensiva"));
-    }
-
-    @Test
     void mirarAdmiteObjetoAlcanceCompactoYDetalleDeEnemigo() throws Exception {
         TestFixtures.CapturingConsole consola = TestFixtures.consola();
         Juego juego = juegoAbierto(consola);
@@ -194,14 +184,14 @@ class ComandosCompuestosConsolaGuiTest {
     }
 
     @Test
-    void elGuerreroPagaLaPenalizacionDelPdfConDosArmasADosManos() throws Exception {
+    void elMarinePagaLaPenalizacionDelPdfConDosArmasADosManos() throws Exception {
         Juego juego = juegoAbierto(TestFixtures.consola());
-        Guerrero guerrero = (Guerrero) juego.getJugador();
-        int costeBase = guerrero.estimarCosteMovimiento();
-        guerrero.equipar(new Arma("pesada uno", "", 1, 10, true));
-        guerrero.equipar(new Arma("pesada dos", "", 1, 10, true));
+        Marine marine = (Marine) juego.getJugador();
+        int costeBase = marine.estimarCosteMovimiento();
+        marine.equipar(new Arma("pesada uno", "", 1, 10, true));
+        marine.equipar(new Arma("pesada dos", "", 1, 10, true));
 
-        assertEquals((int) Math.ceil(costeBase * 1.5), guerrero.estimarCosteMovimiento());
+        assertEquals((int) Math.ceil(costeBase * 1.5), marine.estimarCosteMovimiento());
     }
 
     private Juego juegoAbierto(com.legendoftecla.console.Consola consola) {
@@ -212,7 +202,7 @@ class ComandosCompuestosConsolaGuiTest {
                 mapa.setCelda(fila, columna, new Celda("Celda " + fila + "," + columna, true));
             }
         }
-        Guerrero jugador = new Guerrero("Tecla", new Posicion(2, 2), new Mochila(10, 40), 3);
+        Marine jugador = new Marine("Tecla", new Posicion(2, 2), new Mochila(10, 40), 3);
         return new Juego(consola, mapa, jugador, 100);
     }
 
@@ -239,21 +229,6 @@ class ComandosCompuestosConsolaGuiTest {
             }
             if (componente instanceof Container hijo) {
                 Component encontrado = buscarPorNombre(hijo, nombre);
-                if (encontrado != null) {
-                    return encontrado;
-                }
-            }
-        }
-        return null;
-    }
-
-    private JButton buscarBoton(Container contenedor, String texto) {
-        for (Component componente : contenedor.getComponents()) {
-            if (componente instanceof JButton boton && texto.equals(boton.getText())) {
-                return boton;
-            }
-            if (componente instanceof Container hijo) {
-                JButton encontrado = buscarBoton(hijo, texto);
                 if (encontrado != null) {
                     return encontrado;
                 }

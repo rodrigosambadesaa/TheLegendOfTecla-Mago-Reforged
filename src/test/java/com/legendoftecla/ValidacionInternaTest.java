@@ -6,9 +6,10 @@ import com.legendoftecla.engine.ConfiguracionPartida;
 import com.legendoftecla.loader.EscenarioDefinicion;
 import com.legendoftecla.loader.CargadorJuegoBase;
 import com.legendoftecla.loader.CargadorJuegoDeFicheros;
+import com.legendoftecla.loader.CargadorJuegoGrandeConAliados;
 import com.legendoftecla.loader.CargadorJuegoJson;
 import com.legendoftecla.model.characters.Jugador;
-import com.legendoftecla.model.characters.Guerrero;
+import com.legendoftecla.model.characters.Marine;
 import com.legendoftecla.model.characters.Mochila;
 import com.legendoftecla.model.characters.Personaje;
 import com.legendoftecla.model.items.Arma;
@@ -47,7 +48,7 @@ class ValidacionInternaTest {
                 ConfiguracionPartida.class, OpcionesInicio.class,
                 com.legendoftecla.engine.MotorPartida.class,
                 CargadorJuegoBase.class, CargadorJuegoDeFicheros.class,
-                CargadorJuegoJson.class,
+                CargadorJuegoGrandeConAliados.class, CargadorJuegoJson.class,
                 EscenarioDefinicion.class, EscenarioDefinicion.Punto.class,
                 EscenarioDefinicion.CeldaDef.class,
                 EscenarioDefinicion.PersonajeDef.class,
@@ -60,11 +61,13 @@ class ValidacionInternaTest {
                 com.legendoftecla.commands.ComandoCargar.class,
                 com.legendoftecla.commands.ComandoCompuesto.class,
                 com.legendoftecla.commands.ComandoDesequipar.class,
+                com.legendoftecla.commands.ComandoDescansar.class,
                 com.legendoftecla.commands.ComandoEquipar.class,
                 com.legendoftecla.commands.ComandoInventario.class,
                 com.legendoftecla.commands.ComandoLanzarExplosivo.class,
                 com.legendoftecla.commands.ComandoMirar.class,
                 com.legendoftecla.commands.ComandoMover.class,
+                com.legendoftecla.commands.ComandoPedirAyuda.class,
                 com.legendoftecla.commands.ComandoRecorrido.class,
                 com.legendoftecla.commands.ComandoRepetido.class,
                 com.legendoftecla.commands.ComandoSalir.class,
@@ -92,22 +95,22 @@ class ValidacionInternaTest {
 
     @Test
     void losSettersDelPersonajeAcotanEstadoSinValidacionesExternas() {
-        Guerrero guerrero = new Guerrero("Tecla", new Posicion(0, 0), new Mochila(4, 20), 2);
+        Marine marine = new Marine("Tecla", new Posicion(0, 0), new Mochila(4, 20), 2);
 
-        guerrero.setSalud(-500);
-        assertEquals(0, guerrero.getSalud());
-        guerrero.setSalud(Integer.MAX_VALUE);
-        assertEquals(guerrero.getSaludMaxima(), guerrero.getSalud());
-        guerrero.setEnergia(-500);
-        assertEquals(0, guerrero.getEnergia());
-        guerrero.setEnergia(Integer.MAX_VALUE);
-        assertEquals(guerrero.getEnergiaMaxima(), guerrero.getEnergia());
+        marine.setSalud(-500);
+        assertEquals(0, marine.getSalud());
+        marine.setSalud(Integer.MAX_VALUE);
+        assertEquals(marine.getSaludMaxima(), marine.getSalud());
+        marine.setEnergia(-500);
+        assertEquals(0, marine.getEnergia());
+        marine.setEnergia(Integer.MAX_VALUE);
+        assertEquals(marine.getEnergiaMaxima(), marine.getEnergia());
 
-        assertThrows(IllegalArgumentException.class, () -> guerrero.setSaludMaxima(0));
-        assertThrows(IllegalArgumentException.class, () -> guerrero.setEnergiaMaxima(0));
-        assertThrows(IllegalArgumentException.class, () -> guerrero.setVisionBase(0));
-        assertThrows(IllegalArgumentException.class, () -> guerrero.recibirDanio(-1));
-        assertThrows(IllegalArgumentException.class, () -> guerrero.recuperarEnergia(-1));
+        assertThrows(IllegalArgumentException.class, () -> marine.setSaludMaxima(0));
+        assertThrows(IllegalArgumentException.class, () -> marine.setEnergiaMaxima(0));
+        assertThrows(IllegalArgumentException.class, () -> marine.setVisionBase(0));
+        assertThrows(IllegalArgumentException.class, () -> marine.recibirDanio(-1));
+        assertThrows(IllegalArgumentException.class, () -> marine.recuperarEnergia(-1));
     }
 
     @Test
@@ -130,10 +133,11 @@ class ValidacionInternaTest {
         assertThrows(NullPointerException.class, () -> mapa.setCelda(0, 0, null));
 
         ConfiguracionPartida configuracion = new ConfiguracionPartida(
-                "Tecla", "guerrero", "default", Dificultad.NORMAL,
+                "Tecla", "marine", "default", Dificultad.NORMAL,
                 new DimensionesMapa(10, 10), null, false, 1);
         assertThrows(IllegalArgumentException.class, () -> configuracion.setVarianteMapa(51));
-        assertThrows(IllegalArgumentException.class, () -> configuracion.setClase("marine"));
+        assertDoesNotThrow(() -> configuracion.setClase("mago"));
+        assertThrows(IllegalArgumentException.class, () -> configuracion.setClase("clerigo"));
 
         EscenarioDefinicion escenario = new EscenarioDefinicion();
         assertThrows(IllegalArgumentException.class, () -> escenario.setFilas(500));

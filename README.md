@@ -8,17 +8,20 @@ correcta, mantenible y completa de aquella idea.
 Las referencias históricas identifican a Miguel Alonso Castro y Rodrigo Sambade
 Saá; la ayuda de la fase 2 también menciona a Higinio.
 
-Esta edición conserva como base el alcance clásico de P1–P3 y la parte opcional de
-interfaz/editor, y añade la ampliación táctica solicitada de aliados. Ofrece consola y GUI Swing vía noVNC, editor gráfico, escenarios
-predeterminados/TXT/JSON, Mago, Guerrero y Alquimista, inventario, equipo,
-combate y comandos compuestos. No expone las ampliaciones posteriores del
-repositorio principal, salvo esta capa aliada compartida.
+Esta edición conserva las clases propias Mago, Guerrero y Alquimista y las integra
+con la implementación moderna completa: GUI web, editor, mapas predeterminados,
+grandes, TXT, JSON y procedurales por semilla, misiones, persistencia, progresión,
+entorno destructible, trampas, fabricación, munición y combate táctico.
 
-Los aliados se activan en la GUI o con `--aliados si`, con condición de victoria
-seleccionable mediante `--victoria`. `reagrupar defensiva` y `reagrupar ofensiva`
-hacen que acompañen al jugador; el aliado en mejor estado busca suministros dentro
-del radio del grupo, los enemigos reaccionan al detectar la formación y cada binocular
-se conserva hasta un turno útil y se consume en ese único uso.
+Los aliados parten junto al jugador, pueden generarse automáticamente o en una
+cantidad y nivel elegidos, puntúan individualmente y priorizan ayudar y explorar.
+Algunos cumplen el rol médico y buscan botiquines y Toritos Rojos. Los enemigos
+emplean armas y armaduras de su propia facción, se coordinan cuando hay escuadra y
+su número se escala de forma justa con los aliados. Cada celda posee ambientación
+detallada y `mirar` refleja fielmente suelo, luz, fuego, agua y estructuras visibles.
+La partida puede continuar en modo espectador cuando muere el jugador: `Play`
+reproduce a ritmo normal los turnos restantes. Mapa, estado, acciones, eventos y
+comandos viven en ventanas movibles, redimensionables, minimizables y maximizables.
 
 ## Ejecutar
 

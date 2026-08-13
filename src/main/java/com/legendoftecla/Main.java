@@ -12,6 +12,7 @@ import com.legendoftecla.engine.MotorPartida;
 import com.legendoftecla.exceptions.FinEntradaException;
 import com.legendoftecla.exceptions.JuegoException;
 import com.legendoftecla.gui.VentanaPrincipal;
+import com.legendoftecla.model.world.DimensionesMapa;
 import com.legendoftecla.model.world.Juego;
 
 import java.nio.file.Path;
@@ -72,21 +73,36 @@ public final class Main {
         String modo = opciones.modo() != null
                 ? opciones.modo()
                 : leerModo(consola);
-        Dificultad dificultad = Dificultad.NORMAL;
+        Dificultad dificultad = opciones.dificultad() != null
+                ? opciones.dificultad()
+                : leerDificultad(consola);
+        DimensionesMapa dimensiones = opciones.dimensiones() != null || opciones.rapido()
+                ? opciones.dimensiones()
+                : leerDimensiones(consola);
         Path directorio = opciones.directorioDatos();
         if ("ficheros".equals(modo) && directorio == null) {
             directorio = Path.of(consola.leer(
                     "Ruta del directorio con escenario.json o mapa.txt, objetos.txt y enemigos.txt:"));
         }
-        boolean conAliados = opciones.conAliados() != null
-                ? opciones.conAliados() : leerAliados(consola);
+        int cantidadAliados = opciones.cantidadAliados() != null
+                ? opciones.cantidadAliados()
+                : leerAliados(consola);
+        boolean conAliados = cantidadAliados != 0;
+        int nivelAliados = !conAliados ? 0 : opciones.nivelAliados() != null
+                ? opciones.nivelAliados() : leerNivelAliados(consola);
         CondicionVictoria condicionVictoria = opciones.condicionVictoria() != null
                 ? opciones.condicionVictoria()
-                : (conAliados ? leerCondicionVictoria(consola) : CondicionVictoria.SOLO_JUGADOR);
+                : (conAliados ? leerCondicionVictoria(consola) : CondicionVictoria.JUGADOR_Y_ALIADOS);
+        int varianteMapa = opciones.varianteMapa() != null
+                ? opciones.varianteMapa()
+                : ("grande".equals(modo) ? leerVariante(consola) : 1);
+
         try {
             ConfiguracionPartida configuracion = new ConfiguracionPartida(
-                    nombre, clase, modo, dificultad, null, directorio, conAliados,
-                    condicionVictoria, 1);
+                    nombre, clase, modo, dificultad, dimensiones, directorio, cantidadAliados,
+                    condicionVictoria, varianteMapa);
+            configuracion.setNivelAliados(nivelAliados);
+            if (opciones.seed() != null) configuracion.setSeed(opciones.seed());
             Juego juego = FabricaJuego.crear(consola, configuracion);
             MotorPartida motor = new MotorPartida(juego);
 
@@ -96,8 +112,12 @@ public final class Main {
                         juegoActual.getJugador().getPosicion(),
                         motor.getEnemigosVisibles(),
                         motor.getAliadosVisibles(),
-                        juegoActual.getCeldasInspeccionadas()));
+                        juegoActual.getCeldasInspeccionadas(),
+                        motor.getCeldasIluminadas()));
+                consola.imprimir("Leyenda: J=jugador E=enemigo A=aliado F=fuego ?=oscuridad "
+                        + "T=antorcha U=fuente ==madera o=objeto X=objetivo", TipoMensaje.INFO);
                 consola.imprimir(motor.getEstadoJugador(), TipoMensaje.ESTADO);
+                consola.imprimir(motor.getEstadoAliados(), TipoMensaje.ESTADO);
                 motor.ejecutarComando(consola.leer("accion>"));
             }
         } catch (JuegoException | IllegalArgumentException e) {
@@ -115,23 +135,109 @@ public final class Main {
         }
     }
 
-    private static boolean leerAliados(Consola consola) {
+    private static String leerClase(Consola consola) {
         while (true) {
-            String entrada = consola.leer("¿Incluir aliados? (si/no) [no]:");
+            String clase = consola.leer("Elige clase (mago/guerrero/alquimista/"
+                    + "marine/francotirador/zapador):").trim().toLowerCase();
+            if (clase.equals("mago") || clase.equals("guerrero")
+                    || clase.equals("alquimista") || clase.equals("marine")
+                    || clase.equals("francotirador") || clase.equals("zapador")) {
+                return clase;
+            }
+            consola.imprimir("Clase invalida.", TipoMensaje.ERROR);
+        }
+    }
+
+    private static String leerModo(Consola consola) {
+        while (true) {
+            String modo = consola.leer(
+                    "Modo (1=predeterminado, 2=grande con 50 variantes, 3=ficheros/JSON, 4=procedural):")
+                    .trim().toLowerCase();
+            switch (modo) {
+                case "1", "default" -> {
+                    return "default";
+                }
+                case "2", "grande" -> {
+                    return "grande";
+                }
+                case "3", "ficheros" -> {
+                    return "ficheros";
+                }
+                case "4", "procedural" -> {
+                    return "procedural";
+                }
+                default -> consola.imprimir("Modo invalido.", TipoMensaje.ERROR);
+            }
+        }
+    }
+
+    private static Dificultad leerDificultad(Consola consola) {
+        while (true) {
+            String entrada = consola.leer(
+                    "Dificultad (muy facil, facil, normal, dificil, muy dificil, pesadilla, demente) [normal]:");
+            if (entrada == null || entrada.isBlank()) {
+                return Dificultad.NORMAL;
+            }
+            Dificultad dificultad = Dificultad.desdeTexto(entrada);
+            if (dificultad != null) {
+                return dificultad;
+            }
+            consola.imprimir("Dificultad invalida.", TipoMensaje.ERROR);
+        }
+    }
+
+    private static DimensionesMapa leerDimensiones(Consola consola) {
+        while (true) {
+            String entrada = consola.leer("Tamano global del mapa <filas>x<columnas> (ENTER = por defecto):");
+            if (entrada == null || entrada.isBlank()) {
+                return null;
+            }
+            String[] partes = entrada.trim().toLowerCase().split("x");
+            if (partes.length != 2) {
+                consola.imprimir("Formato invalido. Usa por ejemplo 12x20.", TipoMensaje.ERROR);
+                continue;
+            }
+            try {
+                return new DimensionesMapa(
+                        Integer.parseInt(partes[0].trim()),
+                        Integer.parseInt(partes[1].trim()));
+            } catch (RuntimeException e) {
+                consola.imprimir("Tamano invalido: " + e.getMessage(), TipoMensaje.ERROR);
+            }
+        }
+    }
+
+    private static int leerAliados(Consola consola) {
+        while (true) {
+            String entrada = consola.leer(
+                    "Aliados (no=ninguno, auto=calculados, o escribe una cantidad) [no]:");
             if (entrada == null || entrada.isBlank() || "no".equalsIgnoreCase(entrada.trim())) {
-                return false;
+                return 0;
             }
-            if ("si".equalsIgnoreCase(entrada.trim()) || "sí".equalsIgnoreCase(entrada.trim())) {
-                return true;
+            String normalizada = entrada.trim();
+            if ("si".equalsIgnoreCase(normalizada) || "sí".equalsIgnoreCase(normalizada)
+                    || "auto".equalsIgnoreCase(normalizada)
+                    || "automatico".equalsIgnoreCase(normalizada)
+                    || "automático".equalsIgnoreCase(normalizada)) {
+                return -1;
             }
-            consola.imprimir("Respuesta invalida. Escribe si o no.", TipoMensaje.ERROR);
+            try {
+                int cantidad = Integer.parseInt(normalizada);
+                if (cantidad >= 1 && cantidad <= com.legendoftecla.validation.Limites.ALIADOS_MAXIMOS) {
+                    return cantidad;
+                }
+            } catch (NumberFormatException ignored) {
+                // El mensaje comun explica las alternativas admitidas.
+            }
+            consola.imprimir("Respuesta invalida. Escribe no, auto o una cantidad entre 1 y "
+                    + com.legendoftecla.validation.Limites.ALIADOS_MAXIMOS + ".", TipoMensaje.ERROR);
         }
     }
 
     private static CondicionVictoria leerCondicionVictoria(Consola consola) {
         while (true) {
             String entrada = consola.leer(
-                    "Condicion de victoria (1=solo jugador, 2=jugador y aliados) [2]:");
+                    "Condicion de victoria (1=solo jugador, 2=jugador y todos los aliados) [2]:");
             if (entrada == null || entrada.isBlank()) {
                 return CondicionVictoria.JUGADOR_Y_ALIADOS;
             }
@@ -143,31 +249,43 @@ public final class Main {
         }
     }
 
-    private static String leerClase(Consola consola) {
+    private static int leerNivelAliados(Consola consola) {
         while (true) {
-            String clase = consola.leer("Elige clase (mago/guerrero/alquimista):").trim().toLowerCase();
-            if (clase.equals("mago") || clase.equals("guerrero") || clase.equals("alquimista")) {
-                return clase;
+            String entrada = consola.leer(
+                    "Nivel de todos los aliados (auto o 1-100) [auto]:");
+            if (entrada == null || entrada.isBlank() || "auto".equalsIgnoreCase(entrada.trim())) {
+                return 0;
             }
-            consola.imprimir("Clase invalida.", TipoMensaje.ERROR);
+            try {
+                int nivel = Integer.parseInt(entrada.trim());
+                if (nivel >= 1
+                        && nivel <= com.legendoftecla.validation.Limites.NIVEL_ALIADO_MAXIMO) {
+                    return nivel;
+                }
+            } catch (NumberFormatException ignored) {
+                // El mensaje comun informa del formato valido.
+            }
+            consola.imprimir("Nivel invalido. Escribe auto o un valor entre 1 y "
+                    + com.legendoftecla.validation.Limites.NIVEL_ALIADO_MAXIMO + ".",
+                    TipoMensaje.ERROR);
         }
     }
 
-    private static String leerModo(Consola consola) {
+    private static int leerVariante(Consola consola) {
         while (true) {
-            String modo = consola.leer(
-                    "Modo (1=predeterminado, 2=ficheros/JSON):")
-                    .trim().toLowerCase();
-            switch (modo) {
-                case "1", "default" -> {
-                    return "default";
-                }
-                case "2", "ficheros" -> {
-                    return "ficheros";
-                }
-                default -> consola.imprimir("Modo invalido.", TipoMensaje.ERROR);
+            String entrada = consola.leer("Variante del mapa grande (1-50) [1]:");
+            if (entrada == null || entrada.isBlank()) {
+                return 1;
             }
+            try {
+                int variante = Integer.parseInt(entrada.trim());
+                if (variante >= 1 && variante <= 50) {
+                    return variante;
+                }
+            } catch (NumberFormatException ignored) {
+                // Se informa con el mismo mensaje para cualquier valor no valido.
+            }
+            consola.imprimir("La variante debe ser un numero entre 1 y 50.", TipoMensaje.ERROR);
         }
     }
-
 }

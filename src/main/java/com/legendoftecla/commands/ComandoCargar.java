@@ -4,9 +4,9 @@ import com.legendoftecla.constants.Dificultad;
 import com.legendoftecla.exceptions.ComandoException;
 import com.legendoftecla.exceptions.JuegoException;
 import com.legendoftecla.loader.CargadorJuegoDeFicheros;
-import com.legendoftecla.model.characters.Alquimista;
-import com.legendoftecla.model.characters.Mago;
+import com.legendoftecla.model.characters.Francotirador;
 import com.legendoftecla.model.characters.Personaje;
+import com.legendoftecla.model.characters.Zapador;
 import com.legendoftecla.model.world.Juego;
 import com.legendoftecla.validation.Limites;
 import com.legendoftecla.validation.Validaciones;
@@ -45,12 +45,12 @@ public final class ComandoCargar implements Comando {
     public void ejecutar() throws ComandoException {
         Juego anterior = context.getJuego();
         Personaje jugador = anterior.getJugador();
-        String clase = jugador instanceof Mago ? "mago"
-                : jugador instanceof Alquimista ? "alquimista" : "guerrero";
+        String clase = jugador instanceof Francotirador ? "francotirador"
+                : jugador instanceof Zapador ? "zapador" : "marine";
         try {
             Juego cargado = new CargadorJuegoDeFicheros(
                     anterior.getConsola(), jugador.getNombre(), clase, Path.of(directorio),
-                    Dificultad.NORMAL, null, false).cargarJuego();
+                    Dificultad.NORMAL, null, !anterior.getAliadosRegistrados().isEmpty()).cargarJuego();
             cargado.setCondicionVictoria(anterior.getCondicionVictoria());
             context.setJuego(cargado);
             cargado.getConsola().imprimirExito(

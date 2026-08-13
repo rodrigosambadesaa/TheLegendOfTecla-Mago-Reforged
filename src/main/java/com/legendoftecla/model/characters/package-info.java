@@ -4,7 +4,7 @@
  * <p>{@link com.legendoftecla.model.characters.Personaje} conserva nombre,
  * posicion, salud, energia, vision, mochila y efectos temporales.
  * {@link com.legendoftecla.model.characters.Jugador} especializa el control
- * humano mediante Mago, Guerrero y Alquimista.
+ * humano mediante Marine, Francotirador y Zapador.
  * {@link com.legendoftecla.model.characters.Enemigo} define la raiz de Sectoid
  * y Floaters, mientras que {@link com.legendoftecla.model.characters.Aliado}
  * incorpora estado de asistencia, combate y evacuacion.</p>

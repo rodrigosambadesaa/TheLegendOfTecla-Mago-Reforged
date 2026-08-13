@@ -28,7 +28,7 @@ class ReglasClasicasTest {
     }
 
     @Test
-    void elNombreSeleccionaUnSoloEnemigo() throws Exception {
+    void elNombreValidaElObjetivoYElAtaqueAfectaAlGrupoEnLaCelda() throws Exception {
         TestFixtures.CapturingConsole consola = TestFixtures.consola();
         Juego juego = TestFixtures.juegoBasico(consola);
         Posicion posicion = juego.getJugador().getPosicion();
@@ -40,8 +40,8 @@ class ReglasClasicasTest {
         new ComandoAtacar(new CommandContext(juego), null, "Primero").ejecutar();
 
         assertTrue(primero.getSalud() < saludPrimero);
-        assertEquals(saludSegundo, segundo.getSalud());
-        assertTrue(consola.salida().contains("Atacas a Primero"));
+        assertTrue(segundo.getSalud() < saludSegundo);
+        assertTrue(consola.salida().contains("Atacas a todos los enemigos"));
     }
 
     @Test

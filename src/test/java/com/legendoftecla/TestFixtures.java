@@ -2,7 +2,7 @@ package com.legendoftecla;
 
 import com.legendoftecla.console.Consola;
 import com.legendoftecla.console.TipoMensaje;
-import com.legendoftecla.model.characters.Guerrero;
+import com.legendoftecla.model.characters.Marine;
 import com.legendoftecla.model.characters.Mochila;
 import com.legendoftecla.model.world.Celda;
 import com.legendoftecla.model.world.Juego;
@@ -26,7 +26,7 @@ public final class TestFixtures {
                 mapa.setCelda(fila, columna, new Celda("Celda " + fila + "," + columna, true));
             }
         }
-        Guerrero jugador = new Guerrero("Tecla", new Posicion(0, 0), new Mochila(4, 20), 2);
+        Marine jugador = new Marine("Tecla", new Posicion(0, 0), new Mochila(4, 20), 2);
         return new Juego(consola, mapa, jugador, 30);
     }
 
