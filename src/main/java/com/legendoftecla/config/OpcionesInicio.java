@@ -260,6 +260,7 @@ public final class OpcionesInicio {
         boolean gui = false;
         boolean editor = false;
         Long seed = null;
+        boolean usarPerfilLocal = false;
 
         for (int i = 0; i < args.length; i++) {
             String argumento = Validaciones.textoObligatorio(args[i], "Opcion", Limites.DESCRIPCION);
